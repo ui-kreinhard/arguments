@@ -67,21 +67,19 @@ describe('prefill', function() {
         })
 
         describe('ioc', function() {
-
-            var registerFn = function(a,b,c,d, done) {
+            function registerFn(a,b,c,d, done) {
                 return done.cprefill()
             }
 
-            var registerFnCurvy= registerFn.fill(1,2,3,4);
+            var injector= registerFn.fill(1,2,3,4);
 
-            var a = registerFnCurvy
             var ret;
             var add = function(a,d) {
                 ret = (a+d)
             }
-            registerFnCurvy(add)
+            injector(add)
             expect(ret).toBe(5)
-            registerFnCurvy(function(a,c) {
+            injector(function(a,c) {
                 ret = a + c
             })
             expect(ret).toBe(4)
