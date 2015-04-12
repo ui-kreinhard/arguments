@@ -12,6 +12,17 @@ Function.prototype.getParamNames = function () {
     return result;
 }
 
+Object.prototype.pack = function() {
+    var newKeys = arguments.callee.caller.getParamNames()
+    var ret = {}
+    var i=0;
+    Object.values(this).forEach(function(value) {
+        ret[newKeys[i]] = value
+        i++
+    })
+    return ret
+};
+
 prefillManual = function prefillManual(origFunction, outerArguments, outerParameterNames, ctx) {
     var argumentsArray = []
     var innerParameterNames = origFunction.getParamNames()
@@ -37,4 +48,18 @@ Function.prototype.cprefill = function(ctx) {
     var callerArguments = arguments.callee.caller.arguments
 
     return prefillManual(this, callerArguments, outerParams, ctx)
+}
+
+Function.prototype.bindAndFill = function(source, runCtx) {
+    runCtx = runCtx || this
+    var parameterNames = this.getParamNames()
+    var origFunction = this
+    var argumentsArray = [];
+    Object.keys(source).intersect(parameterNames).forEach(function(parameterName) {
+        var positionOfParameter = parameterNames.indexOf(parameterName);
+        argumentsArray[positionOfParameter] = source[parameterName]
+    })
+    return function() {
+        return origFunction.apply(runCtx, argumentsArray)
+    }
 }
