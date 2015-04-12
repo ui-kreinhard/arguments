@@ -50,16 +50,20 @@ Function.prototype.cprefill = function(ctx) {
     return prefillManual(this, callerArguments, outerParams, ctx)
 }
 
-Function.prototype.bindAndFill = function(source, runCtx) {
-    runCtx = runCtx || this
+Function.prototype.fillFromObject = function(source) {
     var parameterNames = this.getParamNames()
     var origFunction = this
-    var argumentsArray = [];
-    Object.keys(source).intersect(parameterNames).forEach(function(parameterName) {
-        var positionOfParameter = parameterNames.indexOf(parameterName);
-        argumentsArray[positionOfParameter] = source[parameterName]
+
+    var args = [];
+    parameterNames.forEach(function(parameterName) {
+        args.push(source[parameterName])
     })
     return function() {
-        return origFunction.apply(runCtx, argumentsArray)
-    }
+        var slicedArgs = [].slice.call(arguments);
+        var i = 0;
+        var mappedArgs = args.map(function(storedValue) {
+            return storedValue || slicedArgs[i++]
+        })
+        return origFunction.apply(this, mappedArgs);
+    };
 }
