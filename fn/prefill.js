@@ -1,5 +1,5 @@
 require('sugar')
-
+require('./pack.js')
 
 Function.prototype.getParamNames = function () {
     var func = this;
@@ -12,16 +12,7 @@ Function.prototype.getParamNames = function () {
     return result;
 }
 
-Object.prototype.pack = function() {
-    var newKeys = arguments.callee.caller.getParamNames()
-    var ret = {}
-    var i=0;
-    Object.values(this).forEach(function(value) {
-        ret[newKeys[i]] = value
-        i++
-    })
-    return ret
-};
+
 
 prefillManual = function prefillManual(origFunction, outerArguments, outerParameterNames, ctx) {
     var argumentsArray = []

@@ -1,4 +1,4 @@
-require('../fn/prefill')
+require('../fn/arguments.js')
 
 describe('fillFromObject', function() {
 
@@ -55,6 +55,38 @@ describe('fillFromObject', function() {
             expect(ret.b).toBe(2)
             expect(ret.c).toBe(3)
         })
+
+        describe('can be used to fill from arguments', function() {
+            it('should fill', function() {
+                function t(a,b,c) {
+                    expect(a).toBe(1)
+                    expect(b).toBe(2)
+                    expect(c).toBe(3)
+                }
+
+                function t2(a,b,c,d) {
+                    t.fillFromObject(arguments.pack()) ();
+                }
+
+                t2(1,2,3)
+            })
+
+            it('should combine with args.defaultsTo', function() {
+                function t(a,b,c,f) {
+                    expect(a).toBe(1)
+                    expect(b).toBe(2)
+                    expect(c).toBe(3)
+                    expect(f).toBe(4)
+                }
+
+                function t2(a,b,c,d) {
+                    t.fillFromObject(arguments.cpackAndDefaultTo({f: 4}) ) ();
+                }
+
+                t2(1,2,3)
+            })
+        })
+
         describe('should handle unknown vars in source', function() {
             function test(a,b,c) {
                 return arguments.pack();
