@@ -11,14 +11,20 @@ Function.prototype.getParamNames = function () {
     return result;
 }
 
+Object.prototype.unpack = function() {
+    var ret = {}
+    Object.values(this).forEach(function(value, i) {
+        ret['' + i] = value
+    })
+    return ret
+}
+
 Object.prototype.pack = function(args, that) {
 
     var newKeys = args || arguments.callee.caller.getParamNames()
     var ret = {}
-    var i=0;
-    Object.values(that || this).forEach(function(value) {
+    Object.values(that || this).forEach(function(value,i) {
         ret[newKeys[i]] = value
-        i++
     })
     return ret
 };
