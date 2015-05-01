@@ -29,6 +29,7 @@ Object.prototype.pack = function(args, that) {
     return ret
 };
 
+
 Object.prototype.fpack = function(args, that) {
     var that = that || this
     var args = args || arguments.callee.caller.getParamNames()
@@ -36,6 +37,41 @@ Object.prototype.fpack = function(args, that) {
         return this.pack(args, that)
     }
 }
+
+Object.prototype.packAndDefaultTo = function(defaultValue) {
+    return arguments.fpack(arguments.callee.caller.getParamNames(), this).defaultTo(defaultValue)
+}
+
+Object.prototype.cpackAndDefaultTo = function(defaultValue) {
+    return arguments.fpack(arguments.callee.caller.getParamNames(), this).defaultTo(defaultValue) ()
+}
+
+Object.prototype.curvifyOrdered = function () {
+    var members = Object.keys(this);
+    var ret = {};
+    members.forEach(function (key) {
+        if (Object.isFunction(this[key])) {
+            Object.merge(ret, this[key].curvyOrdered(this));
+        }
+    }.bind(this));
+    return ret;
+};
+
+Object.prototype.curvify = function() {
+    var members = Object.keys(this);
+    var ret = {};
+    members.forEach(function (key) {
+        if (Object.isFunction(this[key])) {
+            Object.merge(ret, this[key].curvy(this));
+        }
+    }.bind(this));
+    return ret;
+}
+
+for(var i in {}) {
+    Object.defineProperty(Object.prototype, i, { enumerable: false });
+}
+
 
 Function.prototype.wrap = function (fn) {
     var original = this;
@@ -47,20 +83,6 @@ Function.prototype.wrap = function (fn) {
         return fn.apply (this, args);
     };
 };
-
-Function.prototype.defaultTo = function(defaultValue) {
-    var fn = this;
-
-    return fn.wrap(function(originalFunction, args) {
-        var ret = originalFunction(args);
-        var merged = Object.merge(ret, defaultValue, false, false);
-        return merged || defaultValue;
-    });
-};
-
-Object.prototype.packAndDefaultTo = function(defaultValue) {
-    return arguments.fpack(arguments.callee.caller.getParamNames(), this).defaultTo(defaultValue)
-}
 
 Function.prototype.fillFromObject = function(source) {
     var parameterNames = this.getParamNames()
@@ -80,10 +102,23 @@ Function.prototype.fillFromObject = function(source) {
     };
 }
 
-Object.prototype.cpackAndDefaultTo = function(defaultValue) {
-    return arguments.fpack(arguments.callee.caller.getParamNames(), this).defaultTo(defaultValue) ()
+
+Function.prototype.cfillFromObject = function(source) {
+    return this.fillFromObject(source) ();
 }
 
+
+Function.prototype.defaultTo = function(defaultValue, deep, mergeStrategy) {
+    var fn = this;
+    deep = deep || false;
+    mergeStrategy = mergeStrategy || false;
+
+    return fn.wrap(function(originalFunction, args) {
+        var ret = originalFunction.call(this, args);
+        var merged = Object.merge(ret, defaultValue, deep, mergeStrategy);
+        return merged || defaultValue;
+    });
+};
 
 Function.prototype.curvy = function curvy(context) {
     var origFunction = this;
@@ -153,24 +188,3 @@ Function.prototype.curvyOrdered = function (context) {
     return retArray[0];
 }
 
-Object.prototype.curvifyOrdered = function () {
-    var members = Object.keys(this);
-    var ret = {};
-    members.forEach(function (key) {
-        if (Object.isFunction(this[key])) {
-            Object.merge(ret, this[key].curvyOrdered(this));
-        }
-    }.bind(this));
-    return ret;
-};
-
-Object.prototype.curvify = function() {
-    var members = Object.keys(this);
-    var ret = {};
-    members.forEach(function (key) {
-        if (Object.isFunction(this[key])) {
-            Object.merge(ret, this[key].curvy(this));
-        }
-    }.bind(this));
-    return ret;
-}

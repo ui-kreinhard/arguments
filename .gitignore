@@ -1,2 +1,4 @@
-.idea/*
+.idea/
 *.iml
+karma.conf.js
+node_modules/

@@ -49,10 +49,10 @@ describe('default to', function() {
 
         it('can be used for simplify defaulting arguments', function() {
             function a(b,c,d) {
-                return arguments.packAndDefaultTo({b: 1,c: 2, d:3});
+                return arguments.cpackAndDefaultTo({b: 1,c: 2, d:3});
             }
 
-            expect( a(4,5) ()).toEqual({b:4,c:5,d:3})
+            expect( a(4,5)).toEqual({b:4,c:5,d:3})
         });
     });
 

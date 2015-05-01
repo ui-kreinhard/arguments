@@ -56,6 +56,8 @@ describe('fillFromObject', function() {
             expect(ret.c).toBe(3)
         })
 
+
+
         describe('can be used to fill from arguments', function() {
             it('should fill', function() {
                 function t(a,b,c) {
@@ -122,6 +124,13 @@ describe('fillFromObject', function() {
                 expect(filled(2).a).toBe(1)
                 expect(filled(2).b).toBe(2)
                 expect(filled(2).c).toBe(3)
+            })
+
+            it('should call immediate', function() {
+                var filled = test.cfillFromObject({a: 1,b:2, c:3});
+                expect(filled.a).toBe(1)
+                expect(filled.b).toBe(2)
+                expect(filled.c).toBe(3)
             })
         })
     })
