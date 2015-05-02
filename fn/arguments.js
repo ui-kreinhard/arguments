@@ -120,6 +120,10 @@ Function.prototype.defaultTo = function(defaultValue, deep, mergeStrategy) {
     });
 };
 
+Function.prototype.cdefaultTo = function(defaultTo, deep, mergeStrategy) {
+    return this.defaultTo(defaultTo, deep, mergeStrategy) ();
+}
+
 Function.prototype.curvy = function curvy(context) {
     var origFunction = this;
     var currentArg = 0;

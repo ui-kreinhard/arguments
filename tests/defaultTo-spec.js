@@ -11,6 +11,7 @@ describe('default to', function() {
     }
 
     describe('simple usage', function() {
+        var defaultedFilled = defaultTest.fill(1);
         var defaulted = defaultTest.defaultTo('default');
 
         it('should be defined', function() {
@@ -27,6 +28,10 @@ describe('default to', function() {
 
         it('should return default when null is returned', function() {
             expect(defaulted(0)).toBe('default');
+        });
+
+        it('can be called immediatly', function() {
+           expect(defaultedFilled.cdefaultTo(2)).toBe(2);
         });
     });
 
@@ -54,6 +59,8 @@ describe('default to', function() {
 
             expect( a(4,5)).toEqual({b:4,c:5,d:3})
         });
+
+
     });
 
 
