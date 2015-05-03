@@ -1,5 +1,6 @@
 require('sugar')
 
+
 Function.prototype.getParamNames = function () {
     var func = this;
     var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
@@ -11,6 +12,12 @@ Function.prototype.getParamNames = function () {
     return result;
 }
 
+
+/**
+ * Inverse function to pack
+ *
+ * @returns {{}}
+ */
 Object.prototype.unpack = function() {
     var ret = {}
     Object.values(this).forEach(function(value, i) {
@@ -19,6 +26,16 @@ Object.prototype.unpack = function() {
     return ret
 }
 
+
+/**
+ * Returns an object of an argument object with the appropiate keys
+ *
+ * E.g. {0: 'aaa', 1: 'bbb'} , parameters are a,b
+ *
+ * -> {a: 'aaa', b: 'bbb'}
+ *
+ * @returns {{}}
+ */
 Object.prototype.pack = function(args, that) {
 
     var newKeys = args || arguments.callee.caller.getParamNames()
@@ -29,7 +46,13 @@ Object.prototype.pack = function(args, that) {
     return ret
 };
 
-
+/**
+ * Returns a function which will perform a pack
+ *
+ * @param args
+ * @param that
+ * @returns {Function}
+ */
 Object.prototype.fpack = function(args, that) {
     var that = that || this
     var args = args || arguments.callee.caller.getParamNames()
@@ -38,14 +61,28 @@ Object.prototype.fpack = function(args, that) {
     }
 }
 
+/**
+ * Packs all arguments and performs a defaultTo Operation on it
+ * @param defaultValue
+ * @returns {*}
+ */
 Object.prototype.packAndDefaultTo = function(defaultValue) {
     return arguments.fpack(arguments.callee.caller.getParamNames(), this).defaultTo(defaultValue)
 }
 
+/**
+ * Packs all arguments and performs a defaultTo Operation on it and calls it
+ * @param defaultValue
+ * @returns {*}
+ */
 Object.prototype.cpackAndDefaultTo = function(defaultValue) {
     return arguments.fpack(arguments.callee.caller.getParamNames(), this).defaultTo(defaultValue) ()
 }
 
+/**
+ * All functions from the source object are converted to curvyfied orderd versions
+ * @returns {{}}
+ */
 Object.prototype.curvifyOrdered = function () {
     var members = Object.keys(this);
     var ret = {};
@@ -57,6 +94,11 @@ Object.prototype.curvifyOrdered = function () {
     return ret;
 };
 
+
+/**
+ * All functions from the source object are converted to curvyfied versions
+ * @returns {{}}
+ */
 Object.prototype.curvify = function() {
     var members = Object.keys(this);
     var ret = {};
@@ -68,7 +110,8 @@ Object.prototype.curvify = function() {
     return ret;
 }
 
-for(var i in {}) {
+// hide object defined properties so it doesn't break for(var .. in...) loops
+for(var i in ['unpack', 'pack', 'fpack', 'cpackAndDefaultTo', 'curvifyOrdered', 'curvify']) {
     Object.defineProperty(Object.prototype, i, { enumerable: false });
 }
 
@@ -84,6 +127,14 @@ Function.prototype.wrap = function (fn) {
     };
 };
 
+/**
+ * Returns a prefilled function.
+ * The parameters of the target function are mapped from the given object.
+ * The order of the keys doesn't matter
+ *
+ * @param source
+ * @returns {Function}
+ */
 Function.prototype.fillFromObject = function(source) {
     var parameterNames = this.getParamNames()
     var origFunction = this
@@ -102,7 +153,11 @@ Function.prototype.fillFromObject = function(source) {
     };
 }
 
-
+/**
+ * Performs a fillFromObject operation and calls the resulting function immediate
+ * @param source
+ * @returns {*}
+ */
 Function.prototype.cfillFromObject = function(source) {
     return this.fillFromObject(source) ();
 }
@@ -120,6 +175,14 @@ Function.prototype.defaultTo = function(defaultValue, deep, mergeStrategy) {
     });
 };
 
+/**
+ * Performs a defaultTo operation and calls resulting method immediate
+ *
+ * @param defaultTo
+ * @param deep
+ * @param mergeStrategy
+ * @returns {*}
+ */
 Function.prototype.cdefaultTo = function(defaultTo, deep, mergeStrategy) {
     return this.defaultTo(defaultTo, deep, mergeStrategy) ();
 }
